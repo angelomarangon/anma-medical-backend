@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres
+    container_name: anma-medical-postgres
+    restart: always
+    ports:
+      - "5001:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin123
+      - POSTGRES_DB=anmamedicaldb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data 
+  
+volumes:
+  postgres_data:
