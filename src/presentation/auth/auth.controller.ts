@@ -20,7 +20,11 @@ export class AuthController {
     ) { }
 
     me = async (req: AuthRequest, res: Response) => {
-        const user = await this.userRepository.findById(req.user!.id); // 🔹 Asegurar que obtenemos el usuario de la BD
+        if (!req.user?.id) {
+            return res.status(400).json({ message: "User ID is missing" }); // 🔹 Evitamos pasar undefined
+        }
+
+        const user = await this.userRepository.findById(req.user.id); // 🔹 Asegurar que obtenemos el usuario de la BD
         if (!user) return res.status(404).json({ message: "User not found" });
 
         res.json({
