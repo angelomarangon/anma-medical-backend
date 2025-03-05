@@ -64,17 +64,30 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
     async findAllByUser(userId: string): Promise<Appointment[]> {
         const appointments = await prisma.appointment.findMany({
             where: { userId },
+            include: { // Incluir la relación con el Doctor
+                doctor: {
+                    select: {
+                        name: true,
+                        specialty: true
+                    }
+                }
+            },
             orderBy: { date: 'asc' }
         });
-
+    
         return appointments.map(app => new Appointment(
             app.id,
             app.userId,
             app.doctorId,
             app.date,
             app.status as AppointmentStatus,
-            app.paymentStatus as PaymentStatus
+            app.paymentStatus as PaymentStatus,
+            app.doctor ? { 
+                name: app.doctor.name,
+                specialty: app.doctor.specialty
+            } : undefined
         ));
+    
     }
 
     async update(appointment: Appointment): Promise<void> {

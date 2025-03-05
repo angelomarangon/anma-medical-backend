@@ -19,6 +19,7 @@ export class Appointment {
         public date: Date,
         public status: 'scheduled' | 'completed' | 'cancelled' = 'scheduled',
         public paymentStatus: 'pending' | 'paid' = 'pending',
+        public doctor?: { name: string; specialty: string }
     ){}
 
     completeAppointment() {
