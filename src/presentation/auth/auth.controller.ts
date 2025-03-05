@@ -57,6 +57,7 @@ export class AuthController {
             const token = jwt.sign(
                 {
                     id: user.id,
+                    name: user.name,
                     role: user.role
                 }, 
                 envs.JWT_SEED,
