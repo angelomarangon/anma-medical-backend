@@ -8,6 +8,7 @@ import { envs } from "../../config";
 interface AuthRequest extends Request {
     user?: {
         id: string;
+        name: string;
         role: 'user' | 'admin' | 'doctor' | 'receptionist';
     };
 }
