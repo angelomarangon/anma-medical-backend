@@ -19,7 +19,7 @@ export class AuthController {
         private readonly userRepository: UserRepository,
     ) { }
 
-    me = async (req:AuthRequest, res:Response) => {
+    me = async (req: AuthRequest, res: Response) => {
         res.json({ user: req.user })
     }
 
@@ -60,14 +60,22 @@ export class AuthController {
                     id: user.id,
                     name: user.name,
                     role: user.role
-                }, 
+                },
                 envs.JWT_SEED,
-                {expiresIn: '2h'}
+                { expiresIn: '2h' }
             );
 
-            res.json({message: 'Login Successful', token})
+            res.json({
+                message: 'Login Successful',
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    role: user.role
+                },
+                token
+            })
         } catch (error) {
-            res.status(400).json({error})
+            res.status(400).json({ error })
         }
     }
 }

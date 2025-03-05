@@ -5,6 +5,7 @@ import { envs } from "../../config";
 interface AuthRequest extends Request {
     user?: {
         id: string;
+        name?: string;
         role: 'user' | 'admin' | 'doctor' | 'receptionist';
     };
 }
@@ -18,7 +19,7 @@ export const authMiddleware = (req:AuthRequest, res:Response, next: NextFunction
     }
 
     try {
-        const decoded = jwt.verify(token, envs.JWT_SEED!) as {id: string; role: string};
+        const decoded = jwt.verify(token, envs.JWT_SEED!) as {id: string; name: string; role: string;};
         
         if (!['user', 'admin', 'doctor', 'receptionist'].includes(decoded.role)) {
             res.status(403).json({ error: 'Forbidden: Invalid role' });
