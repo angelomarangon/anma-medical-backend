@@ -5,13 +5,22 @@ import jwt from 'jsonwebtoken';
 import { CreateUserUseCase } from '../../application/use-cases/user/create-user.use-case';
 import { envs } from "../../config";
 
-
+interface AuthRequest extends Request {
+    user?: {
+        id: string;
+        role: 'user' | 'admin' | 'doctor' | 'receptionist';
+    };
+}
 
 export class AuthController {
 
     constructor(
         private readonly userRepository: UserRepository,
     ) { }
+
+    me = async (req:AuthRequest, res:Response) => {
+        res.json({ user: req.user })
+    }
 
     register = async (req: Request, res: Response) => {
         try {
