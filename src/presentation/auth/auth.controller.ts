@@ -20,7 +20,17 @@ export class AuthController {
     ) { }
 
     me = async (req: AuthRequest, res: Response) => {
-        res.json({ user: req.user })
+        const user = await this.userRepository.findById(req.user!.id); // 🔹 Asegurar que obtenemos el usuario de la BD
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        res.json({
+            user: {
+                id: user.id,
+                name: user.name, // 🔹 Asegura que name está incluido
+                role: user.role
+            }
+        });
+
     }
 
     register = async (req: Request, res: Response) => {
