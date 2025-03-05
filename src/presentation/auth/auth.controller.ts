@@ -21,11 +21,15 @@ export class AuthController {
 
     me = async (req: AuthRequest, res: Response) => {
         if (!req.user?.id) {
-            return res.status(400).json({ message: "User ID is missing" }); // 🔹 Evitamos pasar undefined
+            res.status(400).json({ message: "User ID is missing" }); // 🔹 Evitamos pasar undefined
+            return ;
         }
 
         const user = await this.userRepository.findById(req.user.id); // 🔹 Asegurar que obtenemos el usuario de la BD
-        if (!user) return res.status(404).json({ message: "User not found" });
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        } 
 
         res.json({
             user: {
