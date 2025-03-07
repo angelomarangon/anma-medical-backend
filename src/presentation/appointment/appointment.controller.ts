@@ -36,14 +36,14 @@ export class AppointmentController {
         }
     }
 
-    getAppointmentsByDoctor = async(req: AuthRequest, res: Response) => {
+    getAppointmentsByDoctor = async (req: AuthRequest, res: Response) => {
         try {
             const { doctorId } = req.params;
 
             // Verifica que el doctor autenticado solo pueda ver sus propios pacientes
             if (req.user?.id !== doctorId) {
                 res.status(403).json({ error: 'Forbidden: You can only view your own patients' });
-                return ;
+                return;
             }
 
             const appointments = await this.appointmentRepository.findAllByDoctor(doctorId);
@@ -111,7 +111,30 @@ export class AppointmentController {
         }
     }
 
-    getAppointment = async (req: Request, res: Response) => {
-        res.json('getAppointment')
-    }
+    deleteAppointment = async (req: Request, res: Response) => {
+        try {
+            const { id } = req.params; 
+            const { userId } = req.body; 
+
+            const existingAppointment = await this.appointmentRepository.findById(id);
+            if (!existingAppointment) {
+                res.status(404).json({ message: "Cita no encontrada" });
+                return;
+            }
+
+            // Verificar si el usuario es el dueño de la cita
+            if (existingAppointment.userId !== userId) {
+                res.status(403).json({ message: "No tienes permiso para eliminar esta cita" });
+                return;
+            }
+
+            // Eliminar la cita
+            await this.appointmentRepository.delete(id);
+
+            res.status(200).json({ message: "Cita eliminada exitosamente" });
+        } catch (error) {
+            console.error("Error eliminando la cita:", error);
+            res.status(500).json({ message: "Error interno del servidor" });
+        }
+    };
 }
