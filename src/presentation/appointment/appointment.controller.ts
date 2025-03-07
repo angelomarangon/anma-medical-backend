@@ -114,23 +114,28 @@ export class AppointmentController {
     deleteAppointment = async (req: Request, res: Response) => {
         try {
             const { id } = req.params; 
-            const { userId } = req.body; 
-
+            const userId = (req as AuthRequest).user?.id; // ✅ Tomar el usuario autenticado desde `req.user`
+    
+            if (!userId) {
+                res.status(401).json({ message: "Usuario no autenticado" });
+                return;
+            }
+    
             const existingAppointment = await this.appointmentRepository.findById(id);
             if (!existingAppointment) {
                 res.status(404).json({ message: "Cita no encontrada" });
                 return;
             }
-
-            // Verificar si el usuario es el dueño de la cita
+    
+            // ✅ Verificar que el usuario autenticado sea el dueño de la cita
             if (existingAppointment.userId !== userId) {
                 res.status(403).json({ message: "No tienes permiso para eliminar esta cita" });
                 return;
             }
-
-            // Eliminar la cita
+    
+            // ✅ Eliminar la cita
             await this.appointmentRepository.delete(id);
-
+    
             res.status(200).json({ message: "Cita eliminada exitosamente" });
         } catch (error) {
             console.error("Error eliminando la cita:", error);
