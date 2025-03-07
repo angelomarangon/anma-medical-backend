@@ -34,7 +34,7 @@ export class AppountmentRoutes {
         // Cancelar una cita (Usuarios, doctores y recepcionistas pueden hacerlo)
         router.put('/:id/cancel', authMiddleware, roleMiddleware(['user', 'doctor', 'receptionist']), controller.cancelAppointment)
         // Eliminar una cita (Solo administradores pueden hacerlo)
-        router.delete('/:id', controller.deleteAppointment)
+        router.delete('/:id', authMiddleware, controller.deleteAppointment);
 
         return router;
     }
