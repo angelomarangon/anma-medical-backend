@@ -62,7 +62,7 @@ model Appointment {
   userId        String
   doctorId      String
   date          DateTime
-  time          String?
+  time          String?  
   status        String   @default("scheduled")
   paymentStatus String   @default("pending")
   diagnosis     String?

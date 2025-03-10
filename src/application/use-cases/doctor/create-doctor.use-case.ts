@@ -6,7 +6,7 @@ interface Options {
     email: string;
     password: string;
     specialty: string;
-    avaiableDays: string[];
+    availableDays: string[];
 }
 
 export class CreateDoctorUseCase {
@@ -15,7 +15,7 @@ export class CreateDoctorUseCase {
     ) { }
 
     async execute(options: Options): Promise<Doctor> {
-        const { name, email, password, specialty, avaiableDays } = options;
+        const { name, email, password, specialty, availableDays } = options;
 
         const existingDoctor = await this.doctorRepository.findByEmail(email);
         if (existingDoctor) {
@@ -28,7 +28,7 @@ export class CreateDoctorUseCase {
             email,
             password,
             specialty,
-            avaiableDays,
+            availableDays,
             {},
             'doctor'
         );

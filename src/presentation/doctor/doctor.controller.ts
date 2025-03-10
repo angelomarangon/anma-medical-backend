@@ -15,7 +15,7 @@ export class DoctorController {
 
     createDoctor = async (req: Request, res: Response) => {
         try {
-            const { name, email, password, specialty, avaiableDays} = req.body;
+            const { name, email, password, specialty, availableDays } = req.body;
             const createDoctorUseCase = new CreateDoctorUseCase(this.doctorRepository);
             const doctor = await createDoctorUseCase.execute(
                 {
@@ -23,25 +23,26 @@ export class DoctorController {
                     email,
                     password,
                     specialty,
-                    avaiableDays
+                    availableDays
                 });
 
-                res.status(201).json({message: 'Doctor created successfully', doctor});
+            res.status(201).json({ message: 'Doctor created successfully', doctor });
         } catch (error) {
-            res.status(400).json({error: 'Bad request'})
+            res.status(400).json({ error: 'Bad request' })
         }
     }
 
     getDoctor = async (req: Request, res: Response) => {
         try {
-            const {id} = req.params;
+            const { id } = req.params;
             const doctor = await this.doctorRepository.findById(id);
-            if(!doctor) {
-                res.status(404).json({error: 'Doctor not found'});
-            } 
-            res.status(200).json({doctor});
+            if (!doctor) {
+                res.status(404).json({ error: 'Doctor not found' });
+                return;
+            }
+            res.status(200).json({ doctor });
         } catch (error) {
-            res.status(400).json({error: 'Bad request'})
+            res.status(400).json({ error: 'Bad request' })
         }
     }
 
@@ -49,20 +50,25 @@ export class DoctorController {
         try {
             const doctors = await this.doctorRepository.findAll();
 
-            res.json({doctors});
+            res.json({ doctors });
         } catch (error) {
-            res.status(400).json({error: 'Bad request'})            
+            res.status(400).json({ error: 'Bad request' })
         }
     }
 
     deleteDoctor = async (req: Request, res: Response) => {
         try {
-            const {id} = req.params;
+            const { id } = req.params;
+            const doctor = await this.doctorRepository.findById(id);
+            if (!doctor) {
+                res.status(404).json({ error: "Doctor not found" });
+                return;
+            }
             await this.doctorRepository.delete(id);
 
-            res.json({message: 'Doctor deleted successfully'});
+            res.json({ message: 'Doctor deleted successfully' });
         } catch (error) {
-            res.status(400).json({error: 'Bad request'})
+            res.status(400).json({ error: 'Bad request' })
         }
     }
 

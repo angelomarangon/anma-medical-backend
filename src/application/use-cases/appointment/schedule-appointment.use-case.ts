@@ -5,6 +5,7 @@ interface Options {
     userId: string;
     doctorId: string;
     date: Date;
+    time?: string;
 }
 
 export class ScheduleAppointmentUseCase {
@@ -15,7 +16,7 @@ export class ScheduleAppointmentUseCase {
     ){}
 
     async execute(options: Options): Promise<Appointment> {
-        const {userId, doctorId, date} = options
+        const {userId, doctorId, date, time} = options
 
         const user = await this.userRepository.findById(userId);
         if(!user){
@@ -32,7 +33,7 @@ export class ScheduleAppointmentUseCase {
             userId,
             doctorId,
             date,
-            '',
+            time ?? "00:00",
             'scheduled',
             'pending',
         );
