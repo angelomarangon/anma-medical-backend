@@ -29,7 +29,7 @@ export class CreateDoctorUseCase {
             password,
             specialty,
             avaiableDays,
-            [],
+            {},
             'doctor'
         );
 

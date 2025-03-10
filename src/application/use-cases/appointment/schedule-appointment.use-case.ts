@@ -32,8 +32,9 @@ export class ScheduleAppointmentUseCase {
             userId,
             doctorId,
             date,
+            '',
             'scheduled',
-            'pending'
+            'pending',
         );
 
         return this.appointmentRepository.save(newAppointment);
