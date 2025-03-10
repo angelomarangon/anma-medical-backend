@@ -10,6 +10,8 @@ export enum PaymentStatus {
     PAID = 'paid',
 }
 
+//h
+
 export class Appointment {
 
     constructor(
