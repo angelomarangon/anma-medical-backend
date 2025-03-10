@@ -1,11 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import { Appointment, AppointmentRepository, AppointmentStatus, PaymentStatus } from "../../domain";
 
-
 const prisma = new PrismaClient();
 
 export class PrismaAppointmentRepository implements AppointmentRepository {
-
     async save(appointment: Appointment): Promise<Appointment> {
         const { id, userId, doctorId, date, time, status, paymentStatus, diagnosis } = appointment;
         const newAppointment = await prisma.appointment.create({
@@ -13,8 +11,8 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
                 id,
                 userId,
                 doctorId,
-                time,
                 date,
+                time,
                 status: status as AppointmentStatus,
                 paymentStatus: paymentStatus as PaymentStatus,
                 diagnosis
@@ -32,9 +30,21 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
             newAppointment.diagnosis ?? ""
         );
     }
+
     async findById(id: string): Promise<Appointment | null> {
         const appointment = await prisma.appointment.findUnique({
-            where: { id }
+            where: { id },
+            select: {
+                id: true,
+                userId: true,
+                doctorId: true,
+                date: true,
+                time: true,
+                status: true,
+                paymentStatus: true,
+                diagnosis: true,
+                doctor: { select: { name: true, specialty: true } }
+            }
         });
 
         if (!appointment) return null;
@@ -47,14 +57,25 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
             appointment.time ?? "00:00",
             appointment.status as AppointmentStatus,
             appointment.paymentStatus as PaymentStatus,
-            appointment.diagnosis ?? ""
+            appointment.diagnosis ?? "",
+            appointment.doctor ? { name: appointment.doctor.name, specialty: appointment.doctor.specialty } : undefined
         );
     }
 
     async findAllByDoctor(doctorId: string): Promise<Appointment[]> {
         const appointments = await prisma.appointment.findMany({
             where: { doctorId },
-            orderBy: { date: 'asc' } 
+            select: {
+                id: true,
+                userId: true,
+                doctorId: true,
+                date: true,
+                time: true,
+                status: true,
+                paymentStatus: true,
+                diagnosis: true
+            },
+            orderBy: { date: 'asc' }
         });
 
         return appointments.map(app => new Appointment(
@@ -72,17 +93,20 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
     async findAllByUser(userId: string): Promise<Appointment[]> {
         const appointments = await prisma.appointment.findMany({
             where: { userId },
-            include: { // Incluir la relación con el Doctor
-                doctor: {
-                    select: {
-                        name: true,
-                        specialty: true
-                    }
-                }
+            select: {
+                id: true,
+                userId: true,
+                doctorId: true,
+                date: true,
+                time: true,
+                status: true,
+                paymentStatus: true,
+                diagnosis: true,
+                doctor: { select: { name: true, specialty: true } }
             },
             orderBy: { date: 'asc' }
         });
-    
+
         return appointments.map(app => new Appointment(
             app.id,
             app.userId,
@@ -92,12 +116,8 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
             app.status as AppointmentStatus,
             app.paymentStatus as PaymentStatus,
             app.diagnosis ?? "",
-            app.doctor ? { 
-                name: app.doctor.name,
-                specialty: app.doctor.specialty
-            } : undefined
+            app.doctor ? { name: app.doctor.name, specialty: app.doctor.specialty } : undefined
         ));
-    
     }
 
     async update(appointment: Appointment): Promise<void> {
@@ -106,7 +126,8 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
             data: {
                 status: appointment.status,
                 paymentStatus: appointment.paymentStatus,
-                diagnosis: appointment.diagnosis
+                diagnosis: appointment.diagnosis,
+                time: appointment.time
             }
         });
     }
@@ -114,5 +135,4 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
     async delete(id: string): Promise<void> {
         await prisma.appointment.delete({ where: { id } });
     }
-
 }
