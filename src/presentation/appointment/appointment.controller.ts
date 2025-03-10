@@ -92,7 +92,7 @@ export class AppointmentController {
     completeAppointment = async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
-            const { doctorId } = req.body;
+            const { doctorId, diagnosis } = req.body;
 
             if (!doctorId) {
                 res.status(400).json({ error: 'Doctor ID is required' });
@@ -103,7 +103,7 @@ export class AppointmentController {
                 this.appointmentRepository
             );
 
-            await completeAppointmentUseCase.execute(id, { id: doctorId });
+            await completeAppointmentUseCase.execute(id, { id: doctorId }, diagnosis);
 
             res.json({ message: 'Appointment completed successfully' });
         } catch (error) {

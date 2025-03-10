@@ -6,7 +6,7 @@ export class CompleteAppointmentUseCase {
         private readonly appointmentRepository: AppointmentRepository
     ){}
 
-    async execute(appointmentId: string, doctor: {id: string}): Promise<void> {
+    async execute(appointmentId: string, doctor: {id: string}, diagnosis: string): Promise<void> {
         const appointment = await this.appointmentRepository.findById(appointmentId);
         if(!appointment){
             throw new Error('Appointment not found');
@@ -16,7 +16,7 @@ export class CompleteAppointmentUseCase {
             throw new Error('You are not authorized to complete this appointment');
         }
 
-        appointment.completeAppointment();
+        appointment.completeAppointment(diagnosis);
         await this.appointmentRepository.update(appointment);
 
     }

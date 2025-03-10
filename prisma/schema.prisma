@@ -14,22 +14,45 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(uuid())
-  name         String
-  email        String        @unique
-  password     String
-  role         String        @default("user")
-  appointments Appointment[]
+  id                 String   @id @default(uuid())
+  name               String
+  email              String   @unique
+  password           String
+  role               String   @default("user")
+
+  // Datos opcionales
+  identityNumber     String?
+  socialSecurity     String?
+  phone              String?
+  address            String?
+  postalCode         String?
+  city               String?
+  gender             String?
+  birthDate          DateTime?
+  bloodType          String?
+
+  appointments       Appointment[]
 }
 
 model Doctor {
-  id            String   @id @default(uuid())
-  name          String
-  email         String   @unique
-  password      String
-  specialty     String
-  availableDays String[]
-  role          String   @default("doctor")
+  id              String   @id @default(uuid())
+  name            String
+  email           String   @unique
+  password        String
+  specialty       String
+  availableDays   String[]
+  availableHours  Json?   
+  role            String   @default("doctor")
+
+  identityNumber  String?  
+  licenseNumber   String?  
+  phone           String?  
+  address         String?  
+  city            String?  
+  nationality     String?  
+  gender          String?  
+  birthDate       DateTime?  
+  profileImage    String?  
 
   appointments Appointment[] @relation("DoctorAppointments")
 }
@@ -39,8 +62,10 @@ model Appointment {
   userId        String
   doctorId      String
   date          DateTime
+  time          String?
   status        String   @default("scheduled")
   paymentStatus String   @default("pending")
+  diagnosis     String?
 
   user   User   @relation(fields: [userId], references: [id])
   doctor Doctor @relation(fields: [doctorId], references: [id], name: "DoctorAppointments")

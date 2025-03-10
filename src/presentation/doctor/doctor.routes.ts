@@ -20,6 +20,8 @@ export class DoctorRoutes {
         router.get('/', authMiddleware, controller.getAllDoctor );
         // Obtener un doctor por su ID
         router.get('/:id', authMiddleware, controller.getDoctor );
+        // Actualizar dias y horarios de atencion del doctor
+        router.put('/:id/availability', authMiddleware, roleMiddleware(['doctor']), controller.updateDoctorAvailability);
         // Eliminar un doctor (Solo administradores pueden hacerlo)
         router.delete('/:id', authMiddleware, roleMiddleware(['admin']), controller.deleteDoctor )
 

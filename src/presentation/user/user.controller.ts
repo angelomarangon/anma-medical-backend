@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { UserRepository } from '../../domain/repositories/user.repository';
+import { UpdateUserProfileUseCase } from "../../application/use-cases/user/update-user-profile.use-case";
 
 
 
@@ -38,19 +39,9 @@ export class UserController {
     updateUser = async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
-            const { name, email } = req.body;
-
-            const user = await this.userRepository.findById(id);
-            if (!user) {
-                res.status(404).json({ error: 'User not found' });
-                return;
-            }
-
-            user.name = name || user.name;
-            user.email = email || user.email;
-
-            await this.userRepository.update(user);
-            res.json({ message: 'User updated successfully', user });
+            const updateUserProfile = new UpdateUserProfileUseCase(this.userRepository);
+            await updateUserProfile.execute(id, req.body);
+            res.json({ message: 'User updated successfully' });
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' });
         }

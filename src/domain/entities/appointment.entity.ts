@@ -17,13 +17,16 @@ export class Appointment {
         public userId: string,
         public doctorId: string,
         public date: Date,
+        public time: string,
         public status: 'scheduled' | 'completed' | 'cancelled' = 'scheduled',
         public paymentStatus: 'pending' | 'paid' = 'pending',
+        public diagnosis?: string,
         public doctor?: { name: string; specialty: string }
     ){}
 
-    completeAppointment() {
+    completeAppointment(diagnosis: string) {
         this.status = 'completed';
+        this.diagnosis = diagnosis;
     }
 
     cancelAppointment() {

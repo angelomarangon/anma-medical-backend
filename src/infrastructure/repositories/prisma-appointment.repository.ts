@@ -7,15 +7,17 @@ const prisma = new PrismaClient();
 export class PrismaAppointmentRepository implements AppointmentRepository {
 
     async save(appointment: Appointment): Promise<Appointment> {
-        const { id, userId, doctorId, date, status, paymentStatus } = appointment;
+        const { id, userId, doctorId, date, time, status, paymentStatus, diagnosis } = appointment;
         const newAppointment = await prisma.appointment.create({
             data: {
                 id,
                 userId,
                 doctorId,
+                time,
                 date,
                 status: status as AppointmentStatus,
-                paymentStatus: paymentStatus as PaymentStatus
+                paymentStatus: paymentStatus as PaymentStatus,
+                diagnosis
             }
         });
 
@@ -24,8 +26,10 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
             newAppointment.userId,
             newAppointment.doctorId,
             newAppointment.date,
+            newAppointment.time ?? "00:00",
             newAppointment.status as AppointmentStatus,
-            newAppointment.paymentStatus as PaymentStatus
+            newAppointment.paymentStatus as PaymentStatus,
+            newAppointment.diagnosis ?? ""
         );
     }
     async findById(id: string): Promise<Appointment | null> {
@@ -40,8 +44,10 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
             appointment.userId,
             appointment.doctorId,
             appointment.date,
+            appointment.time ?? "00:00",
             appointment.status as AppointmentStatus,
-            appointment.paymentStatus as PaymentStatus
+            appointment.paymentStatus as PaymentStatus,
+            appointment.diagnosis ?? ""
         );
     }
 
@@ -56,8 +62,10 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
             app.userId,
             app.doctorId,
             app.date,
+            app.time ?? "00:00",
             app.status as AppointmentStatus,
-            app.paymentStatus as PaymentStatus
+            app.paymentStatus as PaymentStatus,
+            app.diagnosis ?? ""
         ));
     }
 
@@ -80,8 +88,10 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
             app.userId,
             app.doctorId,
             app.date,
+            app.time ?? "00:00",
             app.status as AppointmentStatus,
             app.paymentStatus as PaymentStatus,
+            app.diagnosis ?? "",
             app.doctor ? { 
                 name: app.doctor.name,
                 specialty: app.doctor.specialty
@@ -95,7 +105,8 @@ export class PrismaAppointmentRepository implements AppointmentRepository {
             where: { id: appointment.id },
             data: {
                 status: appointment.status,
-                paymentStatus: appointment.paymentStatus
+                paymentStatus: appointment.paymentStatus,
+                diagnosis: appointment.diagnosis
             }
         });
     }
