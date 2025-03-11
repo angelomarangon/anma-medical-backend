@@ -103,7 +103,7 @@ export class PrismaDoctorRepository implements DoctorRepository {
             doctor.gender || undefined,
             doctor.birthDate ? new Date(doctor.birthDate) : undefined,
             doctor.profileImage || undefined,
-            doctor.appointments?.map(app => app.id) || [], // ✅ Convertir citas en array de IDs
+            doctor.appointments?.map(app => app.id) || [], 
             doctor.role as 'doctor'
         );
     }

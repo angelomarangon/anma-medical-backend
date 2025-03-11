@@ -4,13 +4,18 @@ import { PrismaUserRepository } from "../../infrastructure/repositories/prisma-u
 import { validateLogin, validateRegister } from "../validators/auth.validator";
 import { validateMiddleware } from "../middlewares/validate.middleware";
 import { authMiddleware } from "../middlewares/auth.middleware";
+import { PrismaDoctorRepository } from "../../infrastructure/repositories/prisma-doctor.repository";
 
 export class AuthRoutes {
 
     static get routes(): Router {
         const router = Router();
-        const userRepository = new PrismaUserRepository
-        const controller = new AuthController(userRepository);
+        const userRepository = new PrismaUserRepository;
+        const doctorRepository = new PrismaDoctorRepository
+        const controller = new AuthController(
+            userRepository,
+            doctorRepository
+        );
 
         // Endpoint para verificar usuario autenticado
         router.get('/me', authMiddleware, controller.me)

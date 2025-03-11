@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { UserRepository } from "../../domain";
+import { DoctorRepository, UserRepository } from "../../domain";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { CreateUserUseCase } from '../../application/use-cases/user/create-user.use-case';
@@ -17,6 +17,7 @@ export class AuthController {
 
     constructor(
         private readonly userRepository: UserRepository,
+        private readonly doctorRepository: DoctorRepository,
     ) { }
 
     me = async (req: AuthRequest, res: Response) => {
@@ -25,7 +26,12 @@ export class AuthController {
             return ;
         }
 
-        const user = await this.userRepository.findById(req.user.id); // 🔹 Asegurar que obtenemos el usuario de la BD
+        let user = await this.userRepository.findById(req.user.id); 
+
+        if (!user) {
+            user = await this.doctorRepository.findById(req.user.id); // 🔹 Buscar en la tabla Doctor
+        }
+
         if (!user) {
             res.status(404).json({ message: "User not found" });
             return;
@@ -60,7 +66,11 @@ export class AuthController {
     login = async (req: Request, res: Response) => {
         try {
             const { email, password } = req.body;
-            const user = await this.userRepository.findByEmail(email);
+            let user = await this.userRepository.findByEmail(email);
+
+            if (!user) {
+                user = await this.doctorRepository.findByEmail(email); // 🔹 Buscar en la tabla Doctor si no está en User
+            }
 
             if (!user) {
                 res.status(404).json({ message: 'User not found' });
