@@ -54,11 +54,12 @@ export class AppointmentController {
             // - Administradores que pueden ver citas de cualquier doctor
             // - Usuarios que buscan turnos disponibles
             if (role !== "admin" && role !== "user" && userId !== doctorId) {
-                return res.status(403).json({ error: 'Forbidden: You do not have access to this data' });
+                res.status(403).json({ error: 'Forbidden: You do not have access to this data' });
+                return;
             }
     
             const appointments = await this.appointmentRepository.findAllByDoctor(doctorId);
-            return res.json(appointments.map(app => ({
+            res.json(appointments.map(app => ({
                 id: app.id,
                 userId: app.userId,
                 doctorId: app.doctorId,
@@ -70,7 +71,8 @@ export class AppointmentController {
             })));
         } catch (error) {
             console.error("Error al obtener citas:", error);
-            return res.status(500).json({ error: 'Internal server error' });
+            res.status(500).json({ error: 'Internal server error' });
+            return;
         }
     };
 
