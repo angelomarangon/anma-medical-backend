@@ -19,7 +19,7 @@ export class Server{
     async start(){
         this.app.use(express.urlencoded({extended: true}));
         this.app.use(cors({
-            origin: ["http://localhost:5173"],
+            origin: ["http://localhost:5173", "https://anmamedical.vercel.app"],
             methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
             credentials: true // Permite el uso de cookies y encabezados de autenticación
         }));
