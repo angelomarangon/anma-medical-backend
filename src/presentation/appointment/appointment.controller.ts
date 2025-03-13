@@ -47,14 +47,18 @@ export class AppointmentController {
     getAppointmentsByDoctor = async (req: AuthRequest, res: Response) => {
         try {
             const { doctorId } = req.params;
-
-            if (req.user?.id !== doctorId) {
-                res.status(403).json({ error: 'Forbidden: You can only view your own patients' });
-                return;
+            const { role, id: userId } = req.user!;
+    
+            // Permitir acceso a:
+            // - El doctor que está autenticado y consulta sus propias citas
+            // - Administradores que pueden ver citas de cualquier doctor
+            // - Usuarios que buscan turnos disponibles
+            if (role !== "admin" && role !== "user" && userId !== doctorId) {
+                return res.status(403).json({ error: 'Forbidden: You do not have access to this data' });
             }
-
+    
             const appointments = await this.appointmentRepository.findAllByDoctor(doctorId);
-            res.json(appointments.map(app => ({
+            return res.json(appointments.map(app => ({
                 id: app.id,
                 userId: app.userId,
                 doctorId: app.doctorId,
@@ -65,9 +69,10 @@ export class AppointmentController {
                 diagnosis: app.diagnosis ?? ""
             })));
         } catch (error) {
-            res.status(500).json({ error: 'Internal server error' });
+            console.error("Error al obtener citas:", error);
+            return res.status(500).json({ error: 'Internal server error' });
         }
-    }
+    };
 
     scheduleAppointment = async (req: Request, res: Response) => {
         try {
