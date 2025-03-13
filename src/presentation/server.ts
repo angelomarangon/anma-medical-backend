@@ -21,7 +21,8 @@ export class Server{
         this.app.use(cors({
             origin: ["http://localhost:5173", "https://anmamedical.vercel.app"],
             methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-            credentials: true // Permite el uso de cookies y encabezados de autenticación
+            allowedHeaders: ["Content-Type", "Authorization"], 
+            credentials: true
         }));
         this.app.use(express.json());
 
