@@ -18,14 +18,20 @@ export class Server{
 
     async start(){
         this.app.use(express.urlencoded({extended: true}));
+        this.app.use(express.json());
         this.app.use(cors({
             origin: ["http://localhost:5173", "https://anmamedical.vercel.app"],
-            methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+            methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
             allowedHeaders: ["Content-Type", "Authorization"], 
             credentials: true
         }));
-        this.app.use(express.json());
-
+        this.app.use((req, res, next) => {
+            if (req.headers["x-forwarded-proto"] !== "https") {
+                return res.redirect(`https://${req.headers.host}${req.url}`);
+            }
+            next();
+        });
+        
         this.app.use(this.routes);
         
         this.app.listen(this.port, ()=> {
